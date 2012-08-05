@@ -85,17 +85,16 @@ function sk_nnd_name_days_shortcode( $attr ) {
 	'after'			=> '',
 	'language'		=> 'fi',
 	'separator'		=> '|',
-	'dateformat'	=> date_i18n( 'l j.n.Y' ),
+	'dateformat'	=> 'l j.n.Y',
 	), $attr ) );
 	
 	/* Get name of that id from $language array. For example $sk_nnd_namedays[ 'fi' ][ 1 ] returns Aapeli. Default is 'fi'. */
 	$sk_nnd_return_name = sk_nnd_name_days( $language );
 	
 	/* Current day. */
-	$sk_nnd_date_format = $attr['dateformat'];
-	$sk_nnd_current_day = '<abbr class="sk-nnd-current-day" title="' . $dateformat . '">' . $dateformat . '</abbr>';
+	$sk_nnd_current_day = '<abbr class="sk-nnd-current-day" title="' . date_i18n( $dateformat ) . '">' . date_i18n( $dateformat ) . '</abbr>';
 	
-	/* Return current weekday, date and names */
+	/* Return current weekday, date and names. */
 	$sk_nnd_all = $sk_nnd_current_day . ' ' . $separator . ' <span class="sk-nnd-name">' . $sk_nnd_return_name . '</span>';
 	
 	/* Return shorcode. */
