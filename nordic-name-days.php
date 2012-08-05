@@ -3,7 +3,7 @@
 * Plugin Name: Nordic Name Days
 * Plugin URI: http://foxnet.fi
 * Description: Display current day of the weeek, day and name day.
-* Version: 0.1
+* Version: 0.2
 * Author: Sami Keijonen
 * Author URI: http://foxnet.fi
 * Licence: GPLv2
@@ -25,7 +25,7 @@
 
 * Display current date and namedays
 *
-* This Plugin will echo current date and namedays using function sk_nnd_nimipaivat()
+* This Plugin will echo current date and namedays using shortcode [sk_nnd_name_days]
 *
 * @return	string		Echos current date and namedays
 *
@@ -40,36 +40,74 @@ Put this code in your template file to show name days
 
    <?php 
 	// Display name of the day
-	if ( function_exists( 'sk_nnd_nimipaivat' ) ) {
-  		sk_nnd_nimipaivat(); 
-}
+	if ( function_exists( 'sk_nnd_name_days_shortcode' ) ) {
+	
+		echo do_shortcode( '[sk_nnd_name_days]' ); 
+		
+	}
 	?>
 */
 
-// Loads Plugin textdomain
-	load_plugin_textdomain( 'nordic-name-days', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+/* Set up the plugin. */
+add_action( 'plugins_loaded', 'sk_nnd_setup' );
 
-function sk_nnd_nimipaivat() {
+/**
+* Sets up the Nordic Name Days plugin and loads files at the appropriate time.
+* @since 0.2
+*/
+function sk_nnd_setup() {
+
+	/* Set constant path to the plugin directory. */
+	define( 'SK_NND_DIR', plugin_dir_path( __FILE__ ) );
+
+	/* Set constant path to the plugin url. */
+	define( 'SK_NND_URL', plugin_dir_url( __FILE__ ) );
+
+	/* Load the translation of the plugin. */
+	load_plugin_textdomain( 'nordic-name-days', false, 'nordic-name-days/languages' );
 	
-	// Current day
-	$sk_nnd_today = date( 'j.n.Y' );
+	/* Add shortcode [sk_nnd_name_days]. */
+	add_shortcode( 'sk_nnd_name_days', 'sk_nnd_name_days_shortcode' );
 	
-	// Day id with leading zeros. So 21.2 is day id 0221
-	$sk_nnd_dayid = date( 'md' );
+	/* You can also use shortcode in text widget. */
+	add_filter( 'widget_text', 'do_shortcode' );
+
+}
+
+/**
+* Add shortcode [sk_nnd_name_days].
+* @since 0.2
+*/
+function sk_nnd_name_days_shortcode( $attr ) {
+
+	extract( shortcode_atts( array(
+	'before'		=> '',
+	'after'			=> '',
+	'language'		=> 'fi',
+	'separator'		=> '|',
+	'dateformat'	=> date_i18n( 'l j.n.Y' ),
+	), $attr ) );
 	
-	// Numeric representation of the day of the week. 0 is Sunday, 6 is Saturday.
-	$sk_nnd_day_week = date( 'w' );
+	/* Get name of that id from $language array. For example $sk_nnd_namedays[ 'fi' ][ 1 ] returns Aapeli. Default is 'fi'. */
+	$sk_nnd_return_name = sk_nnd_name_days( $language );
 	
-	// Translate to finnish Maanantai, Tiistai etc.
-	$sk_nnd_week_days = array(
-		'0' => __( 'Sunday', 'nordic-name-days' ),
-		'1' => __( 'Monday', 'nordic-name-days' ),
-		'2' => __( 'Tuesday', 'nordic-name-days' ),
-		'3' => __( 'Wednesday', 'nordic-name-days' ),
-		'4' => __( 'Thursday', 'nordic-name-days' ),
-		'5' => __( 'Friday', 'nordic-name-days' ),
-		'6' => __( 'Saturday', 'nordic-name-days' )
-		);
+	/* Current day. */
+	$sk_nnd_date_format = $attr['dateformat'];
+	$sk_nnd_current_day = '<abbr class="sk-nnd-current-day" title="' . $dateformat . '">' . $dateformat . '</abbr>';
+	
+	/* Return current weekday, date and names */
+	$sk_nnd_all = $sk_nnd_current_day . ' ' . $separator . ' <span class="sk-nnd-name">' . $sk_nnd_return_name . '</span>';
+	
+	/* Return shorcode. */
+	return $attr['before'] . $sk_nnd_all . $attr['after'];
+	
+}
+
+/**
+* Controls names.
+* @since 0.1
+*/
+function sk_nnd_name_days( $language ) {
 	
 	// Initialize days
 	$sk_nnd_days = array(
@@ -271,19 +309,312 @@ $sk_nnd_namedays = array(
 			'Raafael', 'Senni', 'Aatami, Eeva, Eevi, Eveliina', 'Joulupäivä',
 			'Tapani, Teppo, Tahvo', 'Hannu, Hannes, Hans', 'Piia',
 			'Rauha', 'Taavetti, Taavi, Daavid', 'Sylvester, Silvo'
+		),
+		'nb_NO' => array(
+			'Nyttårsdag', 'Dagfinn, Dagfrid', 'Alfred, Alf', 'Roar, Roger',
+			'Hanna, Hanne', 'Aslaug, Åslaug', 'Eldbjørg, Knut', 'Turid, Torfinn',
+			'Gunnar, Gunn', 'Sigmund, Sigrun', 'Børge, Børre', 'Reinhard, Reinert',
+			'Gisle, Gislaug', 'Herbjørn, Herbjørg', 'Laurits, Laura',
+			'Hjalmar, Hilmar', 'Anton, Tønnes, Tony', 'Hildur, Hild',
+			'Marius, Margunn', 'Fabian, Sebastian, Bastian', 'Agnes, Agnete',
+			'Ivan, Vanja', 'Emil, Emilie, Emma', 'Joar, Jarle, Jarl', 'Paul, Pål',
+			'Øystein, Esten', 'Gaute, Gurli, Gry', 'Karl, Karoline',
+			'Herdis, Hermod, Hermann', 'Gunnhild, Gunda', 'Idun, Ivar',
+			'Birte, Bjarte', 'Jomar, Jostein', 'Ansgar, Asgeir', 'Veronika, Vera',
+			'Agate, Ågot', 'Dortea, Dorte', 'Rikard, Rigmor, Riborg', 'Åshild, Åsne',
+			'Lone, Leikny', 'Ingfrid, Ingrid', 'Ingve, Yngve',
+			'Randulf, Randi, Ronja', 'Svanhild, Svanaug', 'Hjørdis, Jardar',
+			'Sigfred, Sigbjørn', 'Julian, Juliane, Jill',
+			'Aleksandra, Sandra, Sondre', 'Frøydis, Frode', 'Ella, Elna',
+			'Halldis, Halldor', 'Samuel, Selma, Celine', 'Tina, Tim',
+			'Torstein, Torunn', 'Mattias,Mattis, Mats', 'Viktor, Viktoria',
+			'Inger, Ingjerd', 'Laila, Lill', 'Marina, Maren', 'Ingen namnedag',
+			'Audny, Audun', 'Erna, Ernst', 'Gunnbjørg, Gunnveig', 'Ada, Adrian',
+			'Patrick, Patricia', 'Annfrid, Andor', 'Arild, Are',
+			'Beate, Betty, Bettina', 'Sverre, Sindre', 'Edel, Edle', 'Edvin, Tale',
+			'Gregor, Gro', 'Greta, Grete', 'Mathilde, Mette',
+			'Christel, Christer, Chris', 'Gudmund, Gudny', 'Gjertrud, Trude',
+			'Aleksander, Sander, Edvard', 'Josef, Josefine', 'Joakim, Kim',
+			'Bendik, Bengt, Bent', 'Paula, Pauline', 'Gerda, Gerd', 'Ulrikke, Rikke',
+			'Maria, Marie, Mari', 'Gabriel, Glenn', 'Rudolf, Rudi', 'Åsta, Åste',
+			'Jonas, Jonatan', 'Holger, Olga', 'Vebjørn, Vegard', 'Aron, Arve, Arvid',
+			'Sigvard, Sivert', 'Gunnvald, Gunvor', 'Nanna, Nancy, Nina',
+			'Irene, Eirin, Eiril', 'Åsmund, Asmund', 'Oddveig, Oddvin', 'Asle, Atle',
+			'Rannveig, Rønnaug', 'Ingvald, Ingveig', 'Ylva, Ulf', 'Julius, Julie',
+			'Asta, Astrid', 'Ellinor, Nora', 'Oda, Odin, Odd', 'Magnus, Mons',
+			'Elise, Else, Elsa', 'Eilen, Eilert', 'Arnfinn, Arnstein',
+			'Kjellaug, Kjellrun', 'Jeanette, Jannike', 'Oddgeir, Oddny',
+			'Georg, Jørgen, Jørn', 'Albert, Olaug', 'Markus, Mark', 'Terese, Tea',
+			'Charles, Charlotte, Lotte', 'Vivi, Vivian', 'Toralf, Torolf',
+			'Gina, Gitte', 'Filip, Valborg', 'Åsa, Åse', 'Gjermund, Gøril',
+			'Monika, Mona', 'Gudbrand, Gullborg', 'Guri, Gyri', 'Maia, Mai, Maiken',
+			'Åge, Åke', 'Kasper, Jesper', 'Asbjørg, Asbjørn, Espen', 'Magda, Malvin',
+			'Normann, Norvald', 'Linda, Line, Linn', 'Kristian, Kristen, Karsten',
+			'Hallvard, Halvor', 'Sara, Siren', 'Harald, Ragnhild',
+			'Eirik, Erik, Erika', 'Torjus, Torje, Truls', 'Bjørnar, Bjørnhild',
+			'Helene, Ellen, Eli', 'Henning, Henny', 'Oddleif, Oddlaug', 'Ester, Iris',
+			'Ragna, Ragnar', 'Annbjørg, Annlaug', 'Katinka, Cato',
+			'Vilhelm, William, Willy', 'Magnar, Magnhild', 'Gard, Geir',
+			'Pernille, Preben', 'June, Juni', 'Runa, Runar, Rune', 'Rasmus, Rakel',
+			'Heidi, Heid', 'Torbjørg, Torbjørn, Torben', 'Gustav, Gyda',
+			'Robert, Robin', 'Renate, René', 'Kolbein, Kolbjørn', 'Ingolf, Ingunn',
+			'Borgar, Bjørge, Bjørg', 'Sigfrid, Sigrid, Siri', 'Tone, Tonje, Tanja',
+			'Erlend, Erland', 'Vigdis, Viggo', 'Torhild, Toril, Tiril',
+			'Botolv, Bodil', 'Bjarne, Bjørn', 'Erling, Elling', 'Salve, Sølve, Sølvi',
+			'Agnar, Annar', 'Håkon, Maud', 'Elfrid, eldrid', 'Johannes, Jon, Hans',
+			'Jørund, Jorunn', 'Jenny, Jonny', 'Aina, Ina, Ine', 'Lea, Leo, Leon',
+			'Peter, Petter, Per', 'Solbjørg, Solgunn', 'Ask, Embla',
+			'Kjartan, Kjellfrid', 'Andrea, Andrine, André', 'Ulrik, Ulla',
+			'Mirjam, Mina', 'Torgrim, Torgunn', 'Håvard, Hulda',
+			'Sunniva, Synnøve, Synne', 'Gøran, Jøran, Ørjan', 'Anita, Anja',
+			'Kjetil, Kjell', 'Elias, Eldar', 'Mildrid, Melissa, Mia',
+			'Solfrid, Solrun', 'Oddmund, Oddrun', 'Susanne, Sanna', 'Guttorm, Gorm',
+			'Arnulf, Ørnulf', 'Gerhard, Gjert', 'Margareta, Margit, Marit',
+			'Johanne, Janne, Jane', 'Malene, Malin, Mali', 'Brita, Brit, Britt',
+			'Kristine, Kristin, Kristi', 'Jakob, Jack, Jim', 'Anna, Anne, Ane',
+			'Marita, Rita', 'Reidar, Reidun', 'Olav, Ola, Ole',
+			'Aurora, Audhild, Aud', 'Elin, Eline', 'Peder, Petra', 'Karen, Karin',
+			'Oline, Oliver, Olve', 'Arnhild, Arna, Arne', 'Osvald, Oskar',
+			'Gunnlaug, Gunnleiv', 'Didrik, Doris', 'Evy, Yvonne', 'Ronald, Ronny',
+			'Lorents, Lars, Lasse', 'Torvald, Tarald', 'Klara, Camilla',
+			'Anny, Anine, Ann', 'Hallgeir, Hallgjerd', 'Margot, Mary, Marielle',
+			'Brynjulf, Brynhild', 'Verner, Wenche', 'Tormod, Torodd',
+			'Sigvald, Sigve', 'Bernhard, Bernt', 'Ragnvald, Ragni', 'Harriet, Harry',
+			'Signe, Signy', 'Belinda, Bertil', 'Ludvig, Lovise, Lousie',
+			'Øyvind, Eivind, Even', 'Roald, Rolf', 'Artur, August', 'Johan, Jone, Jo',
+			'Benjamin, Ben', 'Berta, Berte', 'Solveig, Solvor', 'Lisa, Lise, Liss',
+			'Alise, Alvhild, Vilde', 'Ida, Idar', 'Brede, Brian, Njål',
+			'Sollaug, Siril, Siv', 'Regine, Rose', 'Amalie, Alma, Allan',
+			'Trygve, Tyra, Trym', 'Tord, Tor', 'Dagny, Dag', 'Jofrid, Jorid',
+			'Stian, Stig', 'Ingebjørg, Ingeborg', 'Aslak, Eskil', 'Lillian, Lilly',
+			'Hildebjørg, Hildegunn', 'Henriette, Henry', 'Konstanse, Connie',
+			'Tobias, Tage', 'Trine, Trond', 'Kyrre, Kåre', 'Snorre, Snefrid',
+			'Jan, Jens', 'Ingvar, Yngvar', 'Einar, Endre', 'Dagmar, Dagrun',
+			'Lena, Lene', 'Mikael, Mikal, Mikkel', 'Helga, Helge, Hege',
+			'Rebekka, Remi', 'Live, Liv', 'Evald, Evelyn', 'Frans, Frank',
+			'Brynjar, Boye, Bo', 'Målfrid, Møyfrid', 'Birgitte, Birgit, Berit',
+			'Benedikte, Bente', 'Leidulf, Leif', 'Fridtjof, Frida, Frits',
+			'Kevin, Kennet, Kent', 'Valter, Vibeke', 'Torgeir, Terje, Tarjei',
+			'Kaia, Kai', 'Hedvig, Hedda', 'Flemming, Finn', 'Marta, Marte',
+			'Kjersti, Kjerstin', 'Tora, Tore', 'Henrik, Heine, Henrikke',
+			'Bergljot, Birger', 'Karianne, Karine, Kine', 'Severin, Søren',
+			'Eilif, Eivor', 'Margrete, Merete, Märtha', 'Amandus, Amanda',
+			'Sturla, Sture', 'Simon, Simen', 'Noralf, Norunn', 'Aksel, Ånund, Ove',
+			'Edit, Edna', 'Veslemøy, Vetle', 'Tove, Tuva', 'Raymond, Roy',
+			'Otto, Ottar', 'Egil, Egon', 'Leonard, Lennart', 'Ingebrigt, Ingelin',
+			'Ingvild, Yngvild', 'Tordis, Teodor', 'Gudbjørg, Gudveig',
+			'Martin, Morten, Martine', 'Torkjell, Torkil', 'Kirsten, Kirsti',
+			'Fredrik, Fred, Freddy', 'Oddfrid, Oddvar', 'Edmund, Edgar',
+			'Hugo, Hogne, Hauk', 'Magne, Magny', 'Elisabeth, Lisbet',
+			'Halvdan, Helle', 'Mariann, Marianne', 'Cecilie, Silje, Sissel',
+			'Klement, Klaus', 'Gudrun, Guro', 'Katarina, Katrine, Kari',
+			'Konrad, Kurt', 'Torlaug, Torleif', 'Ruben, Rut', 'Sofie, Sonja',
+			'Andreas, Anders', 'Arnold, Arnljot, Arnt', 'Borghild, Borgny, Bård',
+			'Sveinung, Svein', 'Barbara, Barbro', 'Stine, Ståle', 'Nils, Nikolai',
+			'Hallfrid, Hallstein', 'Marlene, Marion, Morgan', 'Anniken, Annette',
+			'Judit, Jytte', 'Daniel, Dan', 'Pia, Peggy', 'Lucia, Lydia',
+			'Steinar, Stein', 'Hilda, Hilde', 'Oddbjørg, Oddbjørn', 'Inga, Inge',
+			'Kristoffer, Kate', 'Iselin, Isak', 'Abraham, Amund', 'Tomas, Tom, Tommy',
+			'Ingemar, Ingar', 'Sigurd, Sjur', 'Adam, Eva', 'Første juledag',
+			'Stefan, Steffen', 'Narve, Natalie', 'Unni, Une, Unn', 'Vidar, Vemund',
+			'David, Diana, Dina', 'Sylfest, Sylvia, Sylvi'
+		),
+		'sv_SE' => array(
+			'Nyårsdagen', 'Svea, Sverker', 'Alfred, Alfrida', 'Rut, Ritva',
+			'Hanna, Hannele', 'Kasper, Melker, Baltsar', 'August, Augusta',
+			'Erland, Erhard', 'Gunnar, Gunder', 'Sigurd, Sigbritt, Sigmund',
+			'Jan, Jannike, Hugo, Hagar', 'Frideborg, Fridolf', 'Knut',
+			'Felix, Felicia', 'Laura, Lorentz, Liv', 'Hjalmar, Helmer, Hervor',
+			'Anton, Tony', 'Hilda, Hildur', 'Henrik, Henry', 'Fabian, Sebastian',
+			'Agnes, Agneta', 'Vincent, Viktor, Veine', 'Frej, Freja, Emilia, Emilie',
+			'Erika, Eira', 'Paul, Pål', 'Bodil, Boel', 'Göte, Göta', 'Karl, Karla',
+			'Diana, Valter, Vilma', 'Gunilla, Gunhild', 'Ivar, Joar',
+			'Max, Maximilian, Magda', 'Marja, Mia', 'Disa, Hjördis', 'Ansgar, Anselm',
+			'Agata, Agda, Lisa, Elise', 'Dorotea, Doris, Dora', 'Rikard, Dick',
+			'Berta, Bert, Berthold', 'Fanny, Franciska, Betty', 'Iris, Egon, Egil',
+			'Yngve, Inge, Ingolf', 'Evelina, Evy', 'Agne, Ove, Agnar',
+			'Valentin, Tina', 'Sigfrid, Sigbritt', 'Julia, Julius, Jill',
+			'Alexandra, Sandra', 'Frida, Fritiof, Fritz', 'Gabriella, Ella',
+			'Vivianne, Rasmus, Ruben', 'Hilding, Hulda', 'Pia, Marina, Marlene',
+			'Torsten, Torun', 'Mattias, Mats', 'Sigvard, Sivert', 'Torgny, Torkel',
+			'Lage, Laila', 'Maria, Maja', 'Skottdagen', 'Albin, Elvira, Inez',
+			'Ernst, Erna', 'Gunborg, Gunvor', 'Adrian, Adriana, Ada',
+			'Tora, Tove, Tor', 'Ebba, Ebbe', 'Camilla, Isidor, Doris', 'Siv, Saga',
+			'Torbjörn, Torleif', 'Edla, Ada, Ethel', 'Edvin, Egon, Elon',
+			'Viktoria, Viktor', 'Greger, Iris', 'Matilda, Maud',
+			'Kristoffer, Christel', 'Herbert, Gilbert', 'Gertrud',
+			'Edvard, Edmund, Eddie', 'Josef, Josefina', 'Joakim, Kim', 'Bengt, Benny',
+			'Kennet, Kent, Viking, Vilgot', 'Gerda, Gerd, Gert', 'Gabriel, Rafael',
+			'Mary, Marion', 'Emanuel, Manne', 'Rudolf, Ralf, Raymond',
+			'Malkolm, Morgan', 'Jonas, Jens', 'Holger, Holmfrid, Reidar',
+			'Ester, Estrid', 'Harald, Hervor, Halvar',
+			'Gudmund, Ingemund, Gunnel, Gun', 'Ferdinand, Nanna, Florence',
+			'Marianne, Marlene', 'Irene, Irja', 'Vilhelm, Helmi, Willy',
+			'Irma, Irmelin, Mimmi', 'Nadja, Tanja, Vanja, Ronja', 'Otto, Ottilia',
+			'Ingvar, Ingvor', 'Ulf, Ylva', 'Liv, Julius, Gillis', 'Artur, Douglas',
+			'Tiburtius, Tim', 'Olivia, Oliver', 'Patrik, Patricia', 'Elias, Elis',
+			'Valdemar, Volmar', 'Olaus, Ola', 'Amalia, Amelie, Emelie',
+			'Anneli, Annika', 'Allan, Glenn, Alida', 'Georg, Göran', 'Vega, Viveka',
+			'Markus, Mark', 'Teresia, Terese', 'Engelbrekt, Enok', 'Ture, Tyra',
+			'Tyko, Kennet, Kent', 'Mariana, Marianne', 'Valborg, Maj',
+			'Filip, Filippa', 'John, Jane, Jack', 'Monika, Mona',
+			'Gotthard, Erhard, Vivianne, Vivan', 'Marit, Rita',
+			'Carina, Carita, Lilian, Lilly', 'Åke', 'Reidar, Reidun, Jonatan, Gideon',
+			'Esbjörn, Styrbjörn, Elvira, Elvy', 'Märta, Märit', 'Charlotta, Lotta',
+			'Linnea, Linn, Nina', 'Halvard, Halvar, Lillemor, Lill', 'Sofia, Sonja',
+			'Ronald, Ronny, Hilma, Hilmer', 'Rebecka, Ruben, Nore, Nora',
+			'Erik, Jerker', 'Maj, Majken, Majvor', 'Karolina, Carola, Lina',
+			'Konstantin, Conny', 'Hemming, Henning', 'Desideria, Desirée, Renee',
+			'Ivan, Vanja, Yvonne', 'Urban, Ursula', 'Vilhelmina, Vilma, Helmy',
+			'Beda, Blenda', 'Ingeborg, Borghild', 'Yvonne, Jeanette, Jean',
+			'Vera, Veronika, Fritiof, Frej', 'Petronella, Pernilla, Isabella, Isa',
+			'Gun, Gunnel, Rune, Runa', 'Rutger, Roger', 'Ingemar, Gudmar',
+			'Solbritt, Solveig', 'Bo, Boris', 'Gustav, Gösta', 'Robert, Robin',
+			'Eivor, Majvor, Elaine', 'Börje, Birger, Petra, Petronella',
+			'Svante, Boris, Kerstin, Karsten', 'Bertil, Berthold, Berit',
+			'Eskil, Esbj', 'Aina, Aino, Eila', 'Håkan, Hakon', 'Margit, Margot, Mait',
+			'Axel, Axelina', 'Torborg, Torvald', 'Björn, Bjarne',
+			'Germund, Görel, Jerry', 'Linda, Linn', 'Alf, Alvar, Alva',
+			'Paulina, Paula', 'Adolf, Alice, Adela', 'Johan, Jan', 'David, Salomon',
+			'Rakel, Lea, Gunni, Jim', 'Selma, Fingal, Herta', 'Leo, Leopold',
+			'Peter, Petra', 'Elof, Leif', 'Aron, Mirjam', 'Rosa, Rosita',
+			'Aurora, Adina', 'Ulrika, Ulla', 'Laila, Ritva, Melker, Agaton',
+			'Esaias, Jessika, Ronald, Ronny', 'Klas, Kaj', 'Kjell, Tjelvar',
+			'Jörgen, Örjan', 'André, Andrea, Anund, Gunda', 'Eleonora, Ellinor',
+			'Herman, Hermine', 'Joel, Judit', 'Folke, Odd', 'Ragnhild, Ragnvald',
+			'Reinhold, Reine', 'Bruno, Alexis, Alice', 'Fredrik, Fritz, Fred',
+			'Sara, Sally', 'Margareta, Greta', 'Johanna, Jane',
+			'Magdalena, Madeleine', 'Emma, Emmy', 'Kristina, Kerstin, Stina',
+			'Jakob, James', 'Jesper, Jessika', 'Marta, Moa', 'Botvid, Seved',
+			'Olof, Olle', 'Algot, Margot', 'Helena, Elin, Elna', 'Per, Pernilla',
+			'Karin, Kajsa', 'Tage, Tanja', 'Arne, Arnold', 'Ulrik, Alrik',
+			'Alfons, Inez', 'Dennis, Denise, Donald', 'Silvia, Sylvia',
+			'Roland, Roine', 'Lars, Lorentz', 'Susanna, Sanna', 'Klara, Clary',
+			'Kaj, Hillevi, Gullvi', 'Uno, William, Bill', 'Stella, Estelle, Stefan',
+			'Brynolf, Sigyn', 'Verner, Valter, Veronika', 'Ellen, Lena, Helena',
+			'Magnus, Måns', 'Bernhard, Bernt', 'Jon, Jonna',
+			'Henrietta, Henrika, Henny', 'Signe, Signhild', 'Bartolomeus, Bert',
+			'Lovisa, Louise', 'Östen', 'Rolf, Raoul, Rudolf', 'Gurli, Leila, Gull',
+			'Hans, Hampus', 'Albert, Albertina', 'Arvid, Vidar', 'Samuel, Sam',
+			'Justus, Justina', 'Alfhild, Alva, Alfons', 'Gisela, Glenn',
+			'Adela, Heidi, Harry, Harriet', 'Lilian, Lilly, Sakarias, Esaias',
+			'Regina, Roy', 'Alma, Hulda, Ally', 'Anita, Annette, Anja',
+			'Tord, Turid, Tove', 'Dagny, Helny, Daniela', 'Åsa, Åslög, Tyra',
+			'Sture, Styrbj', 'Ida, Ellida', 'Sigrid, Siri', 'Dag, Daga',
+			'Hildegard, Magnhild', 'Orvar, Alvar', 'Fredrika, Carita',
+			'Elise, Lisa, Agda, Agata', 'Matteus, Ellen, Elly',
+			'Maurits, Moritz, Morgan', 'Tekla, Tea', 'Gerhard, Gert', 'Tryggve',
+			'Enar, Einar', 'Dagmar, Rigmor', 'Lennart, Leonard', 'Mikael, Mikaela',
+			'Helge, Helny', 'Ragnar, Ragna', 'Ludvig, Love, Louis', 'Evald, Osvald',
+			'Frans, Frank', 'Bror, Bruno', 'Jenny, Jennifer', 'Birgitta, Britta',
+			'Nils, Nelly', 'Ingrid, Inger', 'Harry, Harriet, Helmer, Hadar',
+			'Erling, Jarl', 'Valfrid, Manfred, Ernfrid', 'Berit, Birgit, Britt',
+			'Stellan, Manfred, Helfrid', 'Hedvig, Hillevi, Hedda', 'Finn, Fingal',
+			'Antonia, Toini, Annette', 'Lukas, Matteus', 'Tore, Torleif',
+			'Sibylla, Camilla', 'Ursula, Yrsa, Birger', 'Marika, Marita',
+			'Severin, Sören', 'Evert, Eilert', 'Inga, Ingalill, Ingvald',
+			'Amanda, Rasmus, My', 'Sabina, Ina', 'Simon, Simone', 'Viola, Vivi',
+			'Elsa, Isabella, Elsie', 'Edit, Edgar', 'Andre, Andrea', 'Tobias, Toini',
+			'Hubert, Hugo, Diana', 'Sverker, Uno, Unn', 'Eugen, Eugenia',
+			'Gustav Adolf', 'Ingegerd, Ingela', 'Vendela, Vanda',
+			'Teodor, Teodora, Ted', 'Martin, Martina', 'Mårten', 'Konrad, Kurt',
+			'Kristian, Krister', 'Emil, Emilia, Mildred', 'Leopold, Katja, Nadja',
+			'Vibeke, Viveka, Edmund, Gudmund', 'Naemi, Naima, Nancy',
+			'Lillemor, Moa, Pierre, Percy', 'Elisabet, Lisbeth',
+			'Pontus, Marina, Pia', 'Helga, Olga', 'Cecilia, Sissela, Cornelia',
+			'Klemens, Clarence', 'Gudrun, Rune, Runar', 'Katarina, Katja, Carina',
+			'Linus, Love', 'Astrid, Asta', 'Malte, Malkolm', 'Sune, Synn',
+			'Andreas, Anders', 'Oskar, Ossian', 'Beata, Beatrice', 'Lydia, Carola',
+			'Barbara, Barbro', 'Sven, Svante', 'Nikolaus, Niklas', 'Angela, Angelika',
+			'Virginia, Vera', 'Anna, Annie', 'Malin, Malena', 'Daniel, Daniela, Dan',
+			'Alexander, Alexis, Alex', 'Lucia', 'Sten, Sixten, Stig',
+			'Gottfrid, Gotthard', 'Assar, Astor', 'Stig, Inge, Ingemund',
+			'Abraham, Efraim', 'Isak, Rebecka', 'Israel, Moses', 'Tomas, Tom',
+			'Natanael, Jonatan, Natalia', 'Adam', 'Eva', 'Juldagen',
+			'Stefan, Staffan', 'Johannes, Johan, Hannes', 'Benjamin',
+			'Natalia, Natalie', 'Abel, Set, Gunl', 'Sylvester'
+		),
+		'da_DK' => array(
+			'Nytårsdag', 'Abel', 'Enoch', 'Metusalem', 'Simeon', 'Hellige 3 Konger',
+			'Knud', 'Erhardt', 'Julianus', 'Paul', 'Hygimus', 'Reinhold', 'Hilarius',
+			'Felix', 'Maurus', 'Marcellus', 'Antonius', 'Prisca', 'Pontiaus',
+			'Fabian, Sebastian', 'Agnes', 'Vincentius', 'Emerentius', 'Timotheus',
+			'Pauli Omvendelsesdag', 'Polycarpus', 'Chrysostomus',
+			'Carolus, Magnus, Karl', 'Valerius', 'Adelgunde', 'Vigilius', 'Brigida',
+			'Kyndelmisse', 'Blasius', 'Veronica', 'Agathe', 'Dorothea', 'Richard',
+			'Corintha', 'Apollonia', 'Scholastica', 'Euphrosyne', 'Eulalia',
+			'Benignus', 'Valentinus', 'Faustinus', 'Juliane', 'Findanus', 'Concordia',
+			'Ammon', 'Eucharias', 'Samuel', 'Peters Stol', 'Papias', 'Skuddag',
+			'Mattias', 'Victorinus', 'Inger', 'Leander', 'Øllegaard', 'Albinus',
+			'Simplicius', 'Kunigunde', 'Adrianus', 'Theophillus', 'Gotfred',
+			'Perpetua', 'Beata', 'Fyrre riddere', 'Edel', 'Thala', 'Gregorius',
+			'Macedonius', 'Eutychius', 'Zacharias', 'Gudmund', 'Gertrud', 'Alexander',
+			'Joseph', 'Gordius', 'Benedictus', 'Paulus', 'Fidelis', 'Judica, Ulrica',
+			'Maria bebudelsesdag', 'Gabriel', 'Kastor', 'Eustachius', 'Jonas',
+			'Quirinus', 'Balbina', 'Hugo', 'Theodosius', 'Nicæas', 'Ambrosius',
+			'Irene', 'Sixtus', 'Egesippus', 'Janus', 'Otto, Procopius', 'Ezechiel',
+			'Leo', 'Julius', 'Justinus', 'Tiburtius', 'Olympia', 'Mariane',
+			'Anicetus', 'Eleutherius', 'Daniel', 'Sulpicius', 'Florentius', 'Cajus',
+			'Georgius', 'Albertus', 'Markus', 'Cletus', 'Ananias', 'Vitalis',
+			'Peter Martyr', 'Serverus, Valborg', 'Jacob, Philip, Valborg',
+			'Athanasius', 'Kormisse', 'Florian', 'Gothard', 'Johannes ante portam',
+			'Flavia', 'Stanislaus', 'Caspar', 'Gordianus', 'Mamertus', 'Pancratius',
+			'Ingenuus', 'Kristian', 'Sophie', 'Sara', 'Bruno', 'Erik', 'Potentiana',
+			'Angelica', 'Helene', 'Castus', 'Desiderus', 'Esther', 'Urbanus', 'Beda',
+			'Lucian', 'Vilhelm', 'Maciminus', 'Vigand', 'Petronella', 'Nikodemus',
+			'Marcellinus', 'Erasmus', 'Optatus', 'Bonifacius', 'Nobertus', 'Jeremias',
+			'Medardus', 'Primus', 'Onuphrius', 'Barnabas', 'Balisius', 'Cyrillus',
+			'Rufinus', 'Vitus', 'Tycho', 'Botolphus', 'Leontius', 'Gervasius',
+			'Sylverius', 'Albanus', '10.000 martyrer', 'Paulinus', 'Sankt Hans dag',
+			'Prosper', 'Pelagius', 'Syvsoverdag', 'Eleonora', 'Petrus, Paulus',
+			'Lucina', 'Theobaldus', 'Maria besøgelsesdag', 'Cornelius', 'Ulricus',
+			'Anshelmus', 'Dion', 'Villebaldus', 'Kjeld', 'Sostrata', 'Knud Konge',
+			'Josva', 'Henrik', 'Margrethe', 'Bonaventura', 'Apostlenes deling',
+			'Tychos', 'Alecius', 'Arnolphus', 'Justa', 'Elias', 'Evenus',
+			'Maria Magdalene', 'Apollinaris', 'Christina', 'Jacobus', 'Anna',
+			'Martha', 'Aurelius', 'Oluf', 'Abdon', 'Helena, Germanus',
+			'Peter fængsel', 'Hannibal', 'Nikodemus', 'Dominicus', 'Osvaldus',
+			'Kristi forklarelse', 'Donatus', 'Tuth', 'Rosmanus', 'Laurentius',
+			'Herman', 'Clara', 'Hippolytus', 'Eusebius', 'Maria himmelfart', 'Rochus',
+			'Anastatius', 'Agapetus', 'Selbadus', 'Bernhard, Bernhard', 'Salomon',
+			'Symphorian', 'Zakæus', 'Bartholomæus', 'Ludvig', 'Ienæus', 'Gebhardus',
+			'Augustinus', 'Johannes halshuggelsesdag', 'Albert, Benjamin', 'Bertha',
+			'Ægidius', 'Elisa', 'Seraphia', 'Theodosias', 'Regina', 'Magnus',
+			'Robert', 'Maria fødselsdag', 'Gorgonius', 'Buchardt', 'Hillebert',
+			'Guido', 'Cyprianus', 'Korsets ophøjelsesdag', 'Eskild', 'Euphemia',
+			'Lambertu', 'Titus', 'Constantia', 'Tobias', 'Matthæus', 'Mauritius',
+			'Linus', 'Tecla', 'Cleophas', 'Adolph', 'Cosmus', 'Venceslaus',
+			'St. Michael', 'Hieronymus', 'Remigius', 'Ditlev', 'Mette', 'Franciscus',
+			'Placidus', 'Broderus', 'Amalie', 'Ingeborg', 'Dionysius', 'Gereon',
+			'Probus', 'Maximillian', 'Angelus', 'Calixus', 'Hedevig', 'Gallus',
+			'Floretinus', 'Lucas', 'Balthasar', 'Felicianus', 'Ursula', 'Cordula',
+			'Søren', 'Proclus', 'Crispinus', 'Amandus', 'Sem', 'Judas, Simon',
+			'Narcissus', 'Elsa, Absalon', 'Louise', 'Allehelgensdag',
+			'Alle sjæles dag', 'Hubertus', 'Otto', 'Malachias', 'Leonhardus',
+			'Engelbrecht', 'Cladius', 'Theodor', 'Luther', 'Morten bisp', 'Torkild',
+			'Arcadius', 'Frederik', 'Leopold', 'Othenius', 'Anianus', 'Hesychius',
+			'Elisabeth', 'Volkmarus', 'Maria ofring', 'Cecilia', 'Clemens',
+			'Chrysogonus', 'Catharina', 'Conradus', 'Facindus', 'Sophie, Magdalene',
+			'Saturnius', 'Andreas', 'Arnold', 'Bibiana', 'Svend', 'Barbara', 'Sabina',
+			'Nikolaus', 'Agathon', 'Maria undfangelse', 'Rudolph', 'Judith',
+			'Damasus', 'Epimachus', 'Lucia', 'Crispus', 'Nikatius', 'Lazarus',
+			'Albina', 'Lovise', 'Nemesius', 'Abraham', 'Thomas', 'Japetus',
+			'Torlacus', 'Adam, Alexandrine', 'Juledag', 'Stefan',
+			'Johannes evangeliets dag', 'Børnedag', 'Noa', 'David', 'Sylvester'
 		)
 	);
+	
+	// Day id with leading zeros. So 21.2. is day id 0221
+	$sk_nnd_dayid = date( 'md' );
+	
 	// for example 0107 gets id 6 from $sk_nnd_days array
 	$sk_nnd_namelistid = $sk_nnd_days[ $sk_nnd_dayid ];
 	
 	// Get name of that id from fi array. For example $sk_nnd_namedays[ 'fi' ][ 1 ] returns Aapeli
-	$sk_nnd_return_name = $sk_nnd_namedays[ 'fi' ][ $sk_nnd_namelistid ];
+	$sk_nnd_return_name = $sk_nnd_namedays[ $language ][ $sk_nnd_namelistid ];
 	
-	// Get week day: Sunday, Monday, etc.
-	$sk_nnd_week_day = $sk_nnd_week_days[ $sk_nnd_day_week ]; 
-	
-	// echo current weekday, date and names
-	echo $sk_nnd_week_day . ' ' .$sk_nnd_today . ' | ' .$sk_nnd_return_name;
+	// Return name of a day
+	return $sk_nnd_return_name;
 	
 }
 ?>
