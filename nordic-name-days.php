@@ -57,12 +57,6 @@ add_action( 'plugins_loaded', 'sk_nnd_setup' );
 */
 function sk_nnd_setup() {
 
-	/* Set constant path to the plugin directory. */
-	define( 'SK_NND_DIR', plugin_dir_path( __FILE__ ) );
-
-	/* Set constant path to the plugin url. */
-	define( 'SK_NND_URL', plugin_dir_url( __FILE__ ) );
-
 	/* Load the translation of the plugin. */
 	load_plugin_textdomain( 'nordic-name-days', false, 'nordic-name-days/languages' );
 	
@@ -95,7 +89,7 @@ function sk_nnd_name_days_shortcode( $attr ) {
 	$sk_nnd_current_day = '<abbr class="sk-nnd-current-day" title="' . date_i18n( $dateformat ) . '">' . date_i18n( $dateformat ) . '</abbr>';
 	
 	/* Return current weekday, date and names. */
-	$sk_nnd_all = $sk_nnd_current_day . ' ' . $separator . ' <span class="sk-nnd-name">' . $sk_nnd_return_name . '</span>';
+	$sk_nnd_all = $sk_nnd_current_day . ' <span class="sk-nnd-separator">' . $separator . '</span> <span class="sk-nnd-name">' . $sk_nnd_return_name . '</span>';
 	
 	/* Return shorcode. */
 	return $attr['before'] . $sk_nnd_all . $attr['after'];
