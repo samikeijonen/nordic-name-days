@@ -25,7 +25,7 @@
 
 * Display current date and namedays
 *
-* This Plugin will echo current date and namedays using shortcode [sk_nnd_name_days]
+* This Plugin will echo current date and namedays using shortcode [sk-nnd-name-days]
 *
 * @return	string		Echos current date and namedays
 *
@@ -42,7 +42,7 @@ Put this code in your template file to show name days
 	// Display name of the day
 	if ( function_exists( 'sk_nnd_name_days_shortcode' ) ) {
 	
-		echo do_shortcode( '[sk_nnd_name_days]' ); 
+		echo do_shortcode( '[sk-nnd-name-days]' ); 
 		
 	}
 	?>
@@ -60,8 +60,8 @@ function sk_nnd_setup() {
 	/* Load the translation of the plugin. */
 	load_plugin_textdomain( 'nordic-name-days', false, 'nordic-name-days/languages' );
 	
-	/* Add shortcode [sk_nnd_name_days]. */
-	add_shortcode( 'sk_nnd_name_days', 'sk_nnd_name_days_shortcode' );
+	/* Add shortcode [sk-nnd-name-days]. */
+	add_shortcode( 'sk-nnd-name-days', 'sk_nnd_name_days_shortcode' );
 	
 	/* You can also use shortcode in text widget. */
 	add_filter( 'widget_text', 'do_shortcode' );
@@ -69,7 +69,7 @@ function sk_nnd_setup() {
 }
 
 /**
-* Add shortcode [sk_nnd_name_days].
+* Add shortcode [sk-nnd-name-days].
 * @since 0.2
 */
 function sk_nnd_name_days_shortcode( $attr ) {
