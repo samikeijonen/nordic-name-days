@@ -14,7 +14,7 @@ Register shortcode [sk-nnd-name-days] to display current day of the weeek, day a
 
 This mini plugin register shortcode [sk-nnd-name-days] to display current name days in Nordic countries. Supported countries are Finland,
 Norway, Sweden and Denmark. By default shortcode [sk-nnd-name-days] displays current day of the week, day and name days in Finland. You can use
-use shortcode in posts, pages and text widget.
+use shortcode in posts, pages and text widget. This plugin idea is from [International Namedays](http://wordpress.org/extend/plugins/international-namedays/ "International Namedays") plugin.
 
 = Shorcode usage and attributes in other countries =
 

@@ -92,7 +92,10 @@ function sk_nnd_name_days_shortcode( $attr ) {
 	$sk_nnd_all = $sk_nnd_current_day . ' <span class="sk-nnd-separator">' . $separator . '</span> <span class="sk-nnd-name">' . $sk_nnd_return_name . '</span>';
 	
 	/* Return shorcode. */
-	return $attr['before'] . $sk_nnd_all . $attr['after'];
+	$sk_nnd_output = $attr['before'] . $sk_nnd_all . $attr['after'];
+	
+	/* Filter output. */
+	return apply_filters( 'sk_nnd_output_filter', $sk_nnd_output );
 	
 }
 
