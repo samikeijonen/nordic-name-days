@@ -1,9 +1,9 @@
-=== Social Path ===
+=== Nordic Name Days ===
 Contributors: samikeijonen
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=E65RCFVD3QGYU
 Tags: name-days, nordic, names, name
 Requires at least: 3.4
-Tested up to: 3.4.1
+Tested up to: 3.4.2
 Stable tag: 0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -32,14 +32,14 @@ like this.
 If you want to display name days in your theme template file, add this code.
 
 `
-  <?php 
-	// Display name of the day
-	if ( function_exists( 'sk_nnd_name_days_shortcode' ) ) {
+<?php 
+// Display name of the day
+if ( function_exists( 'sk_nnd_name_days_shortcode' ) ) {
 	
-		echo do_shortcode( '[sk-nnd-name-days]' ); 
+	echo do_shortcode( '[sk-nnd-name-days]' ); 
 		
-	}
-	?>
+}
+?>
 `
 
 == Installation ==

@@ -6,7 +6,8 @@
 * Version: 0.2
 * Author: Sami Keijonen
 * Author URI: http://foxnet.fi
-* Licence: GPLv2
+* Licence: GPLv2 or later
+* License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 	Copyright 2012 Sami Keijonen (email : sami.keijonen@foxnet.fi)
 
@@ -86,16 +87,16 @@ function sk_nnd_name_days_shortcode( $attr ) {
 	$sk_nnd_return_name = sk_nnd_name_days( $language );
 	
 	/* Current day. */
-	$sk_nnd_current_day = '<abbr class="sk-nnd-current-day" title="' . date_i18n( $dateformat ) . '">' . date_i18n( $dateformat ) . '</abbr>';
+	$sk_nnd_output = apply_filters( 'sk_nnd_current_day_filter', '<time class="sk-nnd-current-day" datetime="' . date_i18n( $dateformat ) . '">' . date_i18n( $dateformat ) . '</time>' );
 	
-	/* Return current weekday, date and names. */
-	$sk_nnd_all = $sk_nnd_current_day . ' <span class="sk-nnd-separator">' . $separator . '</span> <span class="sk-nnd-name">' . $sk_nnd_return_name . '</span>';
+	/* Return separator. */
+	$sk_nnd_output .= apply_filters( 'sk_nnd_separator_filter', '<span class="sk-nnd-separator"> ' . $separator . ' </span>' );
 	
-	/* Return shorcode. */
-	$sk_nnd_output = $attr['before'] . $sk_nnd_all . $attr['after'];
+	/* Return name. */
+	$sk_nnd_output .= apply_filters( 'sk_nnd_name_filter', '<span class="sk-nnd-name">' . $sk_nnd_return_name . '</span>' );
 	
-	/* Filter output. */
-	return apply_filters( 'sk_nnd_output_filter', $sk_nnd_output );
+	/* Return shortcode. */
+	return $attr['before'] . $sk_nnd_output . $attr['after'];
 	
 }
 
