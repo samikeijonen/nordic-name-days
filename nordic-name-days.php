@@ -59,7 +59,7 @@ add_action( 'plugins_loaded', 'sk_nnd_setup' );
 function sk_nnd_setup() {
 
 	/* Load the translation of the plugin. */
-	load_plugin_textdomain( 'nordic-name-days', false, 'nordic-name-days/languages' );
+	//load_plugin_textdomain( 'nordic-name-days', false, 'nordic-name-days/languages' );
 	
 	/* Add shortcode [sk-nnd-name-days]. */
 	add_shortcode( 'sk-nnd-name-days', 'sk_nnd_name_days_shortcode' );
