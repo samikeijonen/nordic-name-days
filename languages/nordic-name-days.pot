@@ -1,0 +1,33 @@
+# Copyright (C) 2014 Nordic Name Days
+# This file is distributed under the same license as the Nordic Name Days package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Nordic Name Days 0.2.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/nordic-name-days\n"
+"POT-Creation-Date: 2014-04-17 18:45:23+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#. Plugin Name of the plugin/theme
+msgid "Nordic Name Days"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://foxnet-themes.fi/downloads/nordic-name-days/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Display current day of the weeek, day and name day."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Sami Keijonen"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://foxnet-themes.fi/"
+msgstr ""

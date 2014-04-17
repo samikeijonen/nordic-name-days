@@ -1,15 +1,17 @@
 <?php
 /*	
 * Plugin Name: Nordic Name Days
-* Plugin URI: http://foxnet.fi
+* Plugin URI: https://foxnet-themes.fi/downloads/nordic-name-days/
 * Description: Display current day of the weeek, day and name day.
-* Version: 0.2
+* Version: 0.2.1
+* Text Domain: nordic-name-days
+* Domain Path: /languages
 * Author: Sami Keijonen
-* Author URI: http://foxnet.fi
+* Author URI: https://foxnet-themes.fi/
 * Licence: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-	Copyright 2012 Sami Keijonen (email : sami.keijonen@foxnet.fi)
+	Copyright 2014 Sami Keijonen (email : sami.keijonen@foxnet.fi)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -59,7 +61,7 @@ add_action( 'plugins_loaded', 'sk_nnd_setup' );
 function sk_nnd_setup() {
 
 	/* Load the translation of the plugin. */
-	//load_plugin_textdomain( 'nordic-name-days', false, 'nordic-name-days/languages' );
+	load_plugin_textdomain( 'nordic-name-days', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	
 	/* Add shortcode [sk-nnd-name-days]. */
 	add_shortcode( 'sk-nnd-name-days', 'sk_nnd_name_days_shortcode' );
